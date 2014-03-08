@@ -7,7 +7,10 @@ VB6; WINXP SP2; Domain member; Admin Perms to run it.
 
 Functionality:<br>
 UI will allow for choosing of any Exchange Server found within its domain.<br>
-Choose a Volume within the specified Server
-Multi-select user accounts to backup (preview of # of messages and size of mailbox)
-Select all or date range for the group of accounts being backedup
-Options: Compression, Encryption, and 2GB partitioned files per account 
+Choose a Group within the specified Server<br>
+Drill down and then choose a Mailbox Database from selected Group<br>
+  (preview of all accounts along with # of message and mailbox size)<br>
+Multi-select user accounts to backup<br>
+  (displays cumulative disk space to be used and accounts being backedup)<br>
+Select all or date range for the group of accounts being backedup<br>
+Options: Compression, Encryption, and 2GB partitioned files per account<br> 
