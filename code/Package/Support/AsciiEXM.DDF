@@ -1,0 +1,39 @@
+.OPTION EXPLICIT
+.Set Cabinet=off
+.Set Compress=off
+.Set MaxDiskSize=CDROM
+.Set ReservePerCabinetSize=6144
+.Set DiskDirectoryTemplate=".."
+.Set CompressionType=MSZIP
+.Set CompressionLevel=7
+.Set CompressionMemory=21
+.Set CabinetNameTemplate="AsciiEXM.CAB"
+"Setup.Lst"
+"setup.exe"
+.Set Cabinet=on
+.Set Compress=on
+"AsciiEXM.exe"
+"msvbvm60.dll"
+"oleaut32.dll"
+"OLEPRO32.DLL"
+"ASYCFILT.DLL"
+"STDOLE2.TLB"
+"COMCAT.DLL"
+"iphlpapi.dll"
+"WBEMDISP.TLB"
+"SCRRUN.DLL"
+"msvcrt.dll"
+"ACTIVEDS.TLB"
+"cdoexm.dll"
+"Comdlg32.ocx"
+"Msflxgrd.ocx"
+"MSDATGRD.OCX"
+"msstdfmt.dll"
+"MSCAL.OCX"
+"msmask32.ocx"
+"comctl32.ocx"
+"TABCTL32.OCX"
+"MDAC_TYP.EXE"
+"SETUP1.EXE"
+"VB6STKIT.DLL"
+"ST6UNST.EXE"

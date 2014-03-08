@@ -1,0 +1,361 @@
+Commands
+
+
+-----------------------
+//windows time:
+w32tm /stripchart /computer:time-a.nist.gov
+w32tm /resync /rediscover
+    net stop w32time
+
+    net start w32time
+net time \\timeserver
+w32tm /tz
+net time /setsntp[:ntp server list]
+NET TIME \\TIMESRV /SET /YES 
+
+-----------------------
+//monitoring Domain Controller replication
+repadmin /showrepl susany.siboneyusa.com
+repadmin /showreps
+repadmin /?
+
+repadmin /replicate destinationserver
+repadmin /kcc server
+repadmin /istg /verbose
+repadmin /bridgeheads
+
+replmon
+
+//dcdiag applies to DNS Admins/DC Admins/DCdiag users
+//test replication
+dcdiag /test:replications
+dcdiag /?
+dcdiag /checksecurityerror  ////to detect security configurations that can cause AD Replication to fail
+
+ntdsutil
+
+
+-----------------------
+//DNS Failure/unavailable:
+dcdiag /test:connectivity /e
+netdiag /q /test:dns
+netdiag /q /test:trust
+netdiag /q /test:wins
+netdiag /q /test:dclist
+netdiag /q /test:bindings
+netdiag /q /test:dsgetdc
+netdiag /q /test:dsgetdc /d:c.b.a.com /debug
+netdiag /q /test:ldap
+
+
+//get user list
+dsquery user -samid %1 dsget user -samid -display
+
+//get computers
+dsquery computer dc=siboneyusa,dc=com
+dsquery computer 
+	ou=domain controllers, 
+	ou=orphansobjects, 
+	ou=servers
+net view
+
+//display domain controllers
+dsquery server -domain siboneyusa.com
+
+//display global catalogs
+dsquery server -isgc
+dsquery server
+
+
+
+
+
+
+--------------------------
+service command line
+"sc stop myservice"
+
+
+---------------------------
+//xcopy usage
+xcopy %systemroot%\system32\dns d:\backups\dns /y
+
+
+
+netstat -v -b
+net statistics server
+
+
+systeminfo
+sysinfo32
+
+
+adprep.exe //active directory preparation tool
+ntdsutil  //AD directory services maint util
+DCOM 
+
+
+
+
+
+getmac
+hostname
+finger localhost
+fc		//compare files
+macfile 	//managing mac files/folders
+mmc
+msiexec
+msinfo32
+nbtstat
+netsh
+netstat
+net
+nslookup
+ntsd
+logman
+relog
+pcpromo
+dcdiag
+bitsadmin //create upload/download jobs and monitor them
+diskshadow
+dnscmd		//DNS management/automation
+driverquery
+replmon		//AD replication monitor
+
+
+
+
+
+
+
+
+
+
+=============================================================
+---------------------------
+//!!!!! great zone backup & recovery outline
+Fatal_Exception:
+Okay, just so happens I was reading an article on DNS from MCP Magazine and they have the answer for you...  I would post the entire column, but it is fairly long..  so here is only one way, and I suggest you read the entire article:
+
+http://mcpmag.com/columns/article.asp?editorialsid=1024
+
+ith DNS, backing up primary and secondary zones independent of the system state is a pretty simple process. You can use the xcopy command to back up all zone text files on a DNS server. This command would back up the contents of the default DNS folder to the "D:\backups\dns" folder:
+
+xcopy %systemroot%\system32\dns d:\backups\dns /y
+Unfortunately, the process isn?t as simple for Active Directory-integrated DNS zones. For these zones, the support tool dnscmd.exe can get the job done. To back up any DNS zone with dnscmd.exe, you just need to use the /zoneexport switch with the command. To back up the MCPmag.com zone locally on a DNS server, you'd run:
+
+dnscmd /zoneexport mcpmag.com backup\mcpmag.com.dns.bak
+This command writes a copy of the mcpmag.com zone to the %systemroot%\system32\dns\backup\mcpmag.com.dns.bak file. Note that the command doesn't overwrite existing files, so if you?re including it with a backup script, be sure to move the file to an alternate location after the export completes, or to rename or delete the current backup file before you run a new dnscmd /zoneexport job.
+
+If you need to re-create a new zone from the export file, you?ll find that you can do this by using dnscmd.exe with the /zoneadd switch. The only catch with this approach is that if you?re looking to recover an AD-integrated zone, you need to add the zone as a primary first and then convert it to AD-integrated. For example, to recover my mcpmag.com zone, I'd run:
+
+dnscmd /zoneadd mcpmag.com /primary /file mcpmag.com.dns.bak /load
+Here, note that the backup file needs to reside in the %systemroot%\system32\dns folder for it to be properly discovered. Use the /load switch to tell the command to load the configuration from the existing file. Without it, the command will create a new zone data file that will overwrite the contents of the backup file.
+
+After adding the zone to the DNS server, you can convert it to an AD-integrated zone by running:
+
+dnscmd /zoneresettype mcpmag.com /dsprimary
+At this point, you can then enable secure dynamic updates for the zone by running:
+
+dnscmd /config mcpmag.com /allowupdate 2
+This command configures the zone to accept only secure dynamic updates, as specified by the allowupdate value of 2 (use 0 to specify No dynamic updates, 1 for nonsecure and secure dynamic updates).
+
+
+=============================================================
+
+
+
+
+//Email
+
+[PS] C:\Documents and Settings\Administrator.TN-SIBONEY-NY>get-mailbox | export-
+csv c:\temp\export.csv
+
+[PS] C:\Documents and Settings\Administrator.TN-SIBONEY-NY>Get-MailboxStatistics
+ | Sort-Object TotalItemSize -Descending | ft DisplayName,@{label="TotalItemSize
+(KBs)";expression={$_.TotalItemSize.Value.ToKB()}},ItemCount,StorageLimitStatus
+| export-csv c:\temp\mailbox1a.csv
+
+[PS] C:\Documents and Settings\Administrator.TN-SIBONEY-NY>Get-MailboxStatistics
+ | Sort-Object TotalItemSize -Descending | ft DisplayName,name
+
+[PS] C:\Documents and Settings\Administrator.TN-SIBONEY-NY>Get-MailboxStatistics
+ | Sort-Object TotalItemSize -Descending | ft DisplayName,LastLogonTime,lastlogo
+fftime,lastloggedonuseraccount > c:\temp\mailboxes6.txt
+
+
+Get-MailboxStatistics -server susamail
+
+
+//moving mailbox within the same forest (2k7)
+Move-Mailbox contoso\john -TargetDatabase "First Storage Group\Mailbox Database" -MaxThreads 6 -BadItemLimit 100
+
+=============================================================
+
+
+
+
+
+
+
+
+
+
+
+//adding static dns entries in order
+netsh interface ip set dns "NIC-2" static 10.195.82.20 primary
+netsh interface ip add dns name="NIC-2" addr=10.195.83.15 index=2
+netsh interface ip add dns name="NIC-2" addr=10.195.82.22 index=3
+netsh interface ip add dns name="NIC-2" addr=10.195.83.18 index=4
+
+
+//fix exchange limit
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MSExchangeIS\SUSAMAIL\Private-fccf32c1-1c9f-486d-b0e3-09940ff9469f]
+"Database Size Limit in GB"=dword:00000075
+
+
+
+
+//weekly exchange script
+###Send mailbox statistics script
+
+###First, the administrator must change the mail message values in this section
+$sitename = 
+$FromAddress = MailboxReport@neilhobson.com
+$ToAddress = administrator@neilhobson.com
+$MessageSubject = "Mailbox Size Report"
+$MessageBody = "Attached is the current list of mailbox sizes."
+$SendingServer = "e2k7.neilhobson.com"
+
+###Now get the stats and store in a text file
+Get-MailboxStatistics | Sort-Object TotalItemSize -Descending | ft
+DisplayName,@{label="TotalItemSize(KB)";expression={$_.TotalItemSize.Value.ToKB()}},
+ItemCount > mailboxes.txt
+
+###Create the mail message and add the statistics text file as an attachment
+$SMTPMessage = New-Object System.Net.Mail.MailMessage $FromAddress, $ToAddress,
+$MessageSubject, $MessageBody
+$Attachment = New-Object Net.Mail.Attachment("./mailboxes.txt")
+$SMTPMessage.Attachments.Add($Attachment)
+
+###Send the message
+$SMTPClient = New-Object System.Net.Mail.SMTPClient $SendingServer
+$SMTPClient.Send($SMTPMessage)
+
+
+
+
+
+
+
+
+
+
+
+    ChDrive "c:"
+    ChDir ("c:\program files\exchsrvr\bin")
+    
+    sShellString = "exmerge -F " & sAdminExFileName & " -B -D"
+
+	sAdminExFileName = Trim(Text6.Text) & "\" & Trim(Text15.Text)
+
+[EXMERGE]
+MergeAction = Backup Mailboxes.
+SourceServerName = susamail
+DataDirectoryName = c:\exbackup\pst
+FileContainingListOfMailboxes = f:\exbackup\mailboxes.txt
+LogFileName = f:\exbackup\AdminEx.log
+
+exmerge -F f:\exbackup\adminex.ini -B -D
+
+userlist
+/o=COMPANY/ou=STORAGEDBNAME/cn=Recipients/cn=name
+
+/o=siboneyusa.com/ou=FIRST STORAGE GROUP/cn=Recipients/cn=name
+
+
+http://www.winserverkb.com/Uwe/Forum.aspx/exchange-admin/54076/Exmerge-Installation-Instructions
+
+
+
+
+
+
+
+
+
+
+===========
+===========
+===========
+===========
+Change directory to c:\program files\microsoft\exchange\bin
+
+
+!!!!!!!!!!!!!!!!!!!!
+//verify integrity of database
+C:\Program Files\Microsoft\Exchange Server\Bin>isinteg.exe -s susamail -test folderDatabases for server susamail:
+Only databases marked as Offline can be checked
+
+Index  Status       Database-Name
+Storage Group Name: First Storage Group
+  1    Online       Accounts
+  2    Online       Executives
+  3    Offline      Mailbox Database
+Storage Group Name: Second Storage Group
+  4    Online       Public Folder Database
+Storage Group Name: Third-Storage-Group-USA
+  5    Online       All-Quarantine-Mail
+Enter a number to select a database or press Return to exit.
+3
+You have selected First Storage Group / Mailbox Database.
+Continue?(Y/N)y
+Test reference table construction result: 0 error(s); 0 warning(s); 0 fix(es); 0
+ row(s); time: 0h:0m:1s
+Test Folder result: 0 error(s); 4751 warning(s); 0 fix(es); 5119 row(s); time: 0
+h:37m:46s
+Now in test   3(reference count verification) of total   3 tests; 100% complete.
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!
+//defragging the exchange database
+//1. dismount DB from exchange
+//2. turn off transport service
+//3. make sure you have 250% of the original database space open on the same volume.
+C:\Program Files\Microsoft\Exchange Server\Bin>eseutil.exe /d f:\First-SG-DATABA
+SE\MailboxDatabase.edb /t f:\FirstTemp.edb
+
+Extensible Storage Engine Utilities for Microsoft(R) Exchange Server
+Version 08.00
+Copyright (C) Microsoft Corporation. All Rights Reserved.
+
+Initiating DEFRAGMENTATION mode...
+            Database: f:\First-SG-DATABASE\MailboxDatabase.edb
+      Temp. Database: f:\FirstTemp.edb
+
+                  Defragmentation Status (% complete)
+
+          0    10   20   30   40   50   60   70   80   90  100
+          |----|----|----|----|----|----|----|----|----|----|
+          ...................................................
+
+
+Moving 'f:\FirstTemp.edb' to 'f:\First-SG-DATABASE\MailboxDatabase.edb'... DONE!
+
+
+Note:
+  It is recommended that you immediately perform a full backup
+  of this database. If you restore a backup made before the
+  defragmentation, the database will be rolled back to the state
+  it was in at the time of that backup.
+
+Operation completed successfully in 4649.625 seconds.
+
+
+C:\Program Files\Microsoft\Exchange Server\Bin>
+===========
+===========
+===========

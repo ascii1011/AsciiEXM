@@ -1,0 +1,6 @@
+Line 3: Could not create reference: '{00025600-0000-0000-C000-000000000046}#5.2#0'.
+Line 22: Class Crystal.CrystalReport of control CrystalReport1 was not a loaded control class.
+Line 25: The property name _ExtentX in CrystalReport1 is invalid.
+Line 26: The property name _ExtentY in CrystalReport1 is invalid.
+Line 27: The property name _Version in CrystalReport1 is invalid.
+Line 28: The property name PrintFileLinesPerPage in CrystalReport1 is invalid.
